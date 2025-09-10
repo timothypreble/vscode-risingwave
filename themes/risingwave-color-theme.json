@@ -1,0 +1,14 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "RisingWave Theme",
+  "type": "dark",
+  "tokenColors": [
+    {
+      "scope": "keyword.risingwave.sql",
+      "settings": {
+        "foreground": "#FF8800",
+        "fontStyle": "bold"
+      }
+    }
+  ]
+}

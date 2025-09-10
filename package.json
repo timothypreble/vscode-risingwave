@@ -1,0 +1,72 @@
+{
+  "name": "risingwave-sql",
+  "displayName": "RisingWave SQL",
+  "description": "Syntax highlighting and theme support for RisingWave SQL (.rw files)",
+  "version": "0.1.4",
+  "publisher": "USXpress",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "icon": "icons/rw-icon.png",
+  "main": "./extension.js",
+  "activationEvents": [
+    "onLanguage:risingwave-sql"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "risingwave-sql",
+        "aliases": ["RisingWave SQL", "rw"],
+        "extensions": [".rw"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "risingwave-sql",
+        "scopeName": "source.risingwave-sql",
+        "path": "./syntaxes/risingwave.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "risingwave-sql",
+        "path": "./snippets/risingwave.json"
+      },
+      {
+        "language": "risingwave-sql",
+        "path": "./snippets/misc.json"
+      },
+      {
+        "language": "sql",
+        "path": "./snippets/postgres.json"
+      },
+      {
+        "language": "sql",
+        "path": "./snippets/misc.json"
+      }
+    ],
+    "themes": [
+      {
+        "label": "RisingWave Theme",
+        "uiTheme": "vs-dark",
+        "path": "./themes/risingwave-color-theme.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "risingwave-seti",
+        "label": "RisingWave Seti Icons", 
+        "path": "./file-icons/vs-seti-icon-theme.json"
+      }
+    ]
+  }
+}

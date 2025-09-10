@@ -1,0 +1,14 @@
+{
+  "scopeName": "source.risingwave-sql",
+  "fileTypes": ["rw"],
+  "name": "RisingWave SQL",
+  "patterns": [
+    {
+      "include": "source.sql"
+    },
+    {
+      "match": "\\b(CREATE\\s+MATERIALIZED\\s+VIEW|ASOF\\s+JOIN|BACKFILL|EMIT\\s+ON\\s+WINDOW\\s+CLOSE|EMIT\\s+ON\\s+UPDATE|RETENTION|WATERMARK|HOP\\s+WINDOW|TUMBLE\\s+WINDOW|SESSION\\s+WINDOW|SLIDING\\s+WINDOW|INTERVAL|WITH\\s+WATERMARK|SOURCE|SINK|CONNECTOR|TABLE\\s+FUNCTION|DESCRIBE|SHOW\\s+TABLES|SHOW\\s+VIEWS|SHOW\\s+SOURCES|SHOW\\s+SINKS|SHOW\\s+FUNCTIONS|EXPLAIN|CANCEL\\s+JOBS|RECOVER)\\b",
+      "name": "keyword.risingwave.sql"
+    }
+  ]
+}

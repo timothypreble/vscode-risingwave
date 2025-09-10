@@ -1,0 +1,79 @@
+{
+  "Create Materialized View": {
+    "prefix": "mv",
+    "body": [
+      "CREATE MATERIALIZED VIEW ${1:view_name} AS",
+      "SELECT ${2:*}",
+      "FROM ${3:source_table};"
+    ],
+    "description": "Create a RisingWave materialized view"
+  },
+  "Create Source (Kafka)": {
+    "prefix": "sourcekafka",
+    "body": [
+      "CREATE SOURCE ${1:source_name}",
+      "WITH (",
+      "  connector = 'kafka',",
+      "  topic = '${2:topic_name}',",
+      "  properties.bootstrap.server = '${3:localhost:9092}',",
+      "  scan.startup.mode = '${4:earliest}'",
+      ") FORMAT ${5:JSON};"
+    ],
+    "description": "Create a Kafka source"
+  },
+  "ASOF Join": {
+    "prefix": "asof",
+    "body": [
+      "SELECT ${1:a.*}, ${2:b.*}",
+      "FROM ${3:table_a} AS a",
+      "ASOF JOIN ${4:table_b} AS b",
+      "ON a.${5:time_col} = b.${6:time_col};"
+    ],
+    "description": "RisingWave ASOF JOIN"
+  },
+  "Window Aggregation (Tumbling)": {
+    "prefix": "tumble",
+    "body": [
+      "SELECT",
+      "  TUMBLE_START(${1:time_col}, INTERVAL '${2:5 minutes}') AS window_start,",
+      "  TUMBLE_END(${1:time_col}, INTERVAL '${2:5 minutes}') AS window_end,",
+      "  ${3:COUNT(*)} AS cnt",
+      "FROM ${4:source_table}",
+      "GROUP BY TUMBLE(${1:time_col}, INTERVAL '${2:5 minutes}');"
+    ],
+    "description": "Tumbling window aggregation"
+  },
+  "Window Aggregation (Hopping)": {
+    "prefix": "hop",
+    "body": [
+      "SELECT",
+      "  HOP_START(${1:time_col}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}') AS window_start,",
+      "  HOP_END(${1:time_col}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}') AS window_end,",
+      "  ${4:COUNT(*)} AS cnt",
+      "FROM ${5:source_table}",
+      "GROUP BY HOP(${1:time_col}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}');"
+    ],
+    "description": "Hopping window aggregation"
+  },
+  "Emit on Window Close": {
+    "prefix": "emitclose",
+    "body": [
+      "EMIT ON WINDOW CLOSE;"
+    ],
+    "description": "Emit results when window closes"
+  },
+  "Create Sink (Postgres)": {
+    "prefix": "sinkpg",
+    "body": [
+      "CREATE SINK ${1:sink_name}",
+      "FROM ${2:source_view}",
+      "WITH (",
+      "  connector = 'jdbc',",
+      "  jdbc.url = 'jdbc:postgresql://${3:localhost}:5432/${4:database}',",
+      "  jdbc.username = '${5:user}',",
+      "  jdbc.password = '${6:password}'",
+      ") FORMAT ${7:JSON};"
+    ],
+    "description": "Create a PostgreSQL sink"
+  }
+}

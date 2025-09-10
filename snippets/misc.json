@@ -1,0 +1,27 @@
+{
+  "File Header": {
+    "prefix": "header",
+    "body": [
+      "/*",
+      "==============================================================================================================================",
+      " Author:\t\t${1:Your Name}",
+      " Create date:\t${CURRENT_DATE}",
+      " Description:\t${2:Description of this script}",
+      "==============================================================================================================================",
+      " Changes:",
+      " mm/dd/yyyy - Full Name\t\t- Short description of changes",
+      " ${CURRENT_DATE} - ${1:Your Name}\t- Initial Creation.",
+      "==============================================================================================================================",
+      " References:",
+      "   RW: https://docs.risingwave.com",
+      "   PG: https://www.postgresql.org/docs/current/",
+      "==============================================================================================================================",
+      " Notes:",
+      "   - This section is for notes related to the SQL script.",
+      "==============================================================================================================================",
+      "*/",
+      ""
+    ],
+    "description": "Insert a standard RisingWave/SQL file header block"
+  }
+}

@@ -1,0 +1,50 @@
+ There are pros & cons to both of these.
+ The Branch creates a monolith deployment, which inherently brings the risk of breaking everything on a bad deployment.
+ However, the repo (microservice approach), seperates all the different domains so to develop and test all those might have to be run locally to get access to all the services.
+    Thinking something like driver or order which will consume from other repos (Brand, Employee, Driver physical)/
+
+BRANCH - Single Source of truth
+
+Template - from f/clean
+
+Domains - Create a single branch per domain from template.
+
+
+
+usage:
+
+Domain Update
+
+Create local feature branch (f/brand-jira-tix-number) from remote domain branch.
+
+Edit and push to remote
+
+Open PR to merge into domain
+
+On PR approval
+
+  merge feature into Domain
+
+  merge Domain into master
+
+deploy all domains in a single package together.
+
+
+
+REPO - Domain Specific Source of Truth
+Template - from f/clean
+
+ Domains - Create a single repo per domain from template.
+
+Create local feature branch (f/brand-jira-tix-number) from remote domain repo
+
+Edit and push to remote
+
+Open PR to merge feature into domain repo
+
+On PR approval
+
+  merge Domain into master
+
+deploy single domain
+
