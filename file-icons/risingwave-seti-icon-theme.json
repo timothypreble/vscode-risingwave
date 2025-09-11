@@ -1,0 +1,151 @@
+{
+  "information_for_contributors": [
+    "This file is based on the VS Code Seti icon theme",
+    "with custom RisingWave (.rw) file icon added",
+    "Original theme: https://github.com/microsoft/vscode/tree/main/extensions/theme-seti"
+  ],
+  "fonts": [
+    {
+      "id": "seti",
+      "src": [
+        {
+          "path": "./seti.woff",
+          "format": "woff"
+        }
+      ],
+      "weight": "normal",
+      "style": "normal",
+      "size": "150%"
+    }
+  ],
+  "iconDefinitions": {
+    "_rw": {
+      "fontCharacter": "\\E022",
+      "fontColor": "#e37933"
+    },
+    "_rw_light": {
+      "fontCharacter": "\\E022",
+      "fontColor": "#cc6d2e"
+    },
+    "_default": {
+      "fontCharacter": "\\E023",
+      "fontColor": "#d4d7d6"
+    },
+    "_default_light": {
+      "fontCharacter": "\\E023",
+      "fontColor": "#bfc2c1"
+    },
+    "_javascript": {
+      "fontCharacter": "\\E051",
+      "fontColor": "#cbcb41"
+    },
+    "_javascript_light": {
+      "fontCharacter": "\\E051",
+      "fontColor": "#b7b73b"
+    },
+    "_json": {
+      "fontCharacter": "\\E055",
+      "fontColor": "#cbcb41"
+    },
+    "_json_light": {
+      "fontCharacter": "\\E055",
+      "fontColor": "#b7b73b"
+    },
+    "_html": {
+      "fontCharacter": "\\E048",
+      "fontColor": "#519aba"
+    },
+    "_html_light": {
+      "fontCharacter": "\\E048",
+      "fontColor": "#498ba7"
+    },
+    "_css": {
+      "fontCharacter": "\\E01D",
+      "fontColor": "#519aba"
+    },
+    "_css_light": {
+      "fontCharacter": "\\E01D",
+      "fontColor": "#498ba7"
+    },
+    "_typescript": {
+      "fontCharacter": "\\E099",
+      "fontColor": "#519aba"
+    },
+    "_typescript_light": {
+      "fontCharacter": "\\E099",
+      "fontColor": "#498ba7"
+    },
+    "_python": {
+      "fontCharacter": "\\E07B",
+      "fontColor": "#519aba"
+    },
+    "_python_light": {
+      "fontCharacter": "\\E07B",
+      "fontColor": "#498ba7"
+    },
+    "_markdown": {
+      "fontCharacter": "\\E060",
+      "fontColor": "#519aba"
+    },
+    "_markdown_light": {
+      "fontCharacter": "\\E060",
+      "fontColor": "#498ba7"
+    },
+    "_sql": {
+      "fontCharacter": "\\E022",
+      "fontColor": "#519aba"
+    },
+    "_sql_light": {
+      "fontCharacter": "\\E022",
+      "fontColor": "#498ba7"
+    }
+  },
+  "file": "_default",
+  "fileExtensions": {
+    "rw": "_rw",
+    "js": "_javascript",
+    "json": "_json",
+    "html": "_html",
+    "css": "_css",
+    "ts": "_typescript",
+    "py": "_python",
+    "md": "_markdown",
+    "sql": "_sql"
+  },
+  "languageIds": {
+    "risingwave-sql": "_rw",
+    "javascript": "_javascript",
+    "json": "_json",
+    "html": "_html",
+    "css": "_css",
+    "typescript": "_typescript",
+    "python": "_python",
+    "markdown": "_markdown",
+    "sql": "_sql"
+  },
+  "light": {
+    "file": "_default_light",
+    "fileExtensions": {
+      "rw": "_rw_light",
+      "js": "_javascript_light",
+      "json": "_json_light",
+      "html": "_html_light",
+      "css": "_css_light",
+      "ts": "_typescript_light",
+      "py": "_python_light",
+      "md": "_markdown_light",
+      "sql": "_sql_light"
+    },
+    "languageIds": {
+      "risingwave-sql": "_rw_light",
+      "javascript": "_javascript_light",
+      "json": "_json_light",
+      "html": "_html_light",
+      "css": "_css_light",
+      "typescript": "_typescript_light",
+      "python": "_python_light",
+      "markdown": "_markdown_light",
+      "sql": "_sql_light"
+    }
+  }
+}
