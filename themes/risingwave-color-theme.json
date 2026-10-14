@@ -2,12 +2,121 @@
   "$schema": "vscode://schemas/color-theme",
   "name": "RisingWave Theme",
   "type": "dark",
+  "colors": {
+    "editor.background": "#1e1e1e",
+    "editor.foreground": "#d4d4d4",
+    "activityBarBadge.background": "#ff8800",
+    "sideBarTitle.foreground": "#bbbbbb"
+  },
   "tokenColors": [
     {
-      "scope": "keyword.risingwave.sql",
+      "name": "RisingWave DDL Keywords",
+      "scope": [
+        "keyword.control.risingwave.ddl",
+        "keyword.control.risingwave.streaming",
+        "keyword.control.risingwave.window",
+        "keyword.control.risingwave.format",
+        "keyword.control.risingwave.admin",
+        "keyword.control.risingwave.option"
+      ],
       "settings": {
         "foreground": "#FF8800",
         "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "RisingWave Functions",
+      "scope": "support.function.risingwave",
+      "settings": {
+        "foreground": "#FFAA33",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "RisingWave Connectors",
+      "scope": "constant.language.risingwave.connector",
+      "settings": {
+        "foreground": "#FF6600",
+        "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "RisingWave Data Types",
+      "scope": "storage.type.risingwave",
+      "settings": {
+        "foreground": "#FFCC66"
+      }
+    },
+    {
+      "name": "PostgreSQL Keywords",
+      "scope": [
+        "keyword.other.postgresql.dml",
+        "keyword.other.postgresql.ddl",
+        "keyword.other.postgresql.transaction"
+      ],
+      "settings": {
+        "foreground": "#569CD6"
+      }
+    },
+    {
+      "name": "PostgreSQL Data Types",
+      "scope": "storage.type.postgresql",
+      "settings": {
+        "foreground": "#4EC9B0"
+      }
+    },
+    {
+      "name": "PostgreSQL Functions",
+      "scope": [
+        "support.function.postgresql.aggregate",
+        "support.function.postgresql.string",
+        "support.function.postgresql.datetime",
+        "support.function.postgresql.json",
+        "support.function.postgresql.window"
+      ],
+      "settings": {
+        "foreground": "#DCDCAA"
+      }
+    },
+    {
+      "name": "Strings",
+      "scope": [
+        "string.quoted.single.sql",
+        "string.quoted.double.sql",
+        "string.quoted.dollar.sql"
+      ],
+      "settings": {
+        "foreground": "#CE9178"
+      }
+    },
+    {
+      "name": "Numbers",
+      "scope": "constant.numeric.sql",
+      "settings": {
+        "foreground": "#B5CEA8"
+      }
+    },
+    {
+      "name": "Comments",
+      "scope": [
+        "comment.line.double-dash.sql",
+        "comment.block.sql"
+      ],
+      "settings": {
+        "foreground": "#6A9955",
+        "fontStyle": "italic"
+      }
+    },
+    {
+      "name": "Operators",
+      "scope": [
+        "keyword.operator.comparison.sql",
+        "keyword.operator.arithmetic.sql",
+        "keyword.operator.json.sql",
+        "keyword.operator.assignment.sql"
+      ],
+      "settings": {
+        "foreground": "#D4D4D4"
       }
     }
   ]

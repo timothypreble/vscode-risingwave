@@ -1,14 +1,209 @@
 {
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "scopeName": "source.risingwave-sql",
   "fileTypes": ["rw"],
   "name": "RisingWave SQL",
   "patterns": [
-    {
-      "include": "source.sql"
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#risingwave-keywords" },
+    { "include": "#risingwave-functions" },
+    { "include": "#risingwave-connectors" },
+    { "include": "#risingwave-types" },
+    { "include": "#postgresql-keywords" },
+    { "include": "#postgresql-functions" },
+    { "include": "#operators" },
+    { "include": "#identifiers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.sql",
+          "match": "--.*$"
+        },
+        {
+          "name": "comment.block.sql",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
     },
-    {
-      "match": "\\b(CREATE\\s+MATERIALIZED\\s+VIEW|ASOF\\s+JOIN|BACKFILL|EMIT\\s+ON\\s+WINDOW\\s+CLOSE|EMIT\\s+ON\\s+UPDATE|RETENTION|WATERMARK|HOP\\s+WINDOW|TUMBLE\\s+WINDOW|SESSION\\s+WINDOW|SLIDING\\s+WINDOW|INTERVAL|WITH\\s+WATERMARK|SOURCE|SINK|CONNECTOR|TABLE\\s+FUNCTION|DESCRIBE|SHOW\\s+TABLES|SHOW\\s+VIEWS|SHOW\\s+SOURCES|SHOW\\s+SINKS|SHOW\\s+FUNCTIONS|EXPLAIN|CANCEL\\s+JOBS|RECOVER)\\b",
-      "name": "keyword.risingwave.sql"
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.single.sql",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sql",
+              "match": "''"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.double.sql",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.dollar.sql",
+          "begin": "\\$\\$",
+          "end": "\\$\\$"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.sql",
+          "match": "\\b\\d+(\\.\\d+)?([eE][+-]?\\d+)?\\b"
+        }
+      ]
+    },
+    "risingwave-keywords": {
+      "patterns": [
+        {
+          "comment": "RisingWave DDL - Sources and Sinks",
+          "name": "keyword.control.risingwave.ddl",
+          "match": "(?i)\\b(CREATE\\s+SOURCE|CREATE\\s+SINK|CREATE\\s+MATERIALIZED\\s+VIEW|DROP\\s+SOURCE|DROP\\s+SINK|DROP\\s+MATERIALIZED\\s+VIEW|ALTER\\s+SOURCE|ALTER\\s+SINK|ALTER\\s+MATERIALIZED\\s+VIEW)\\b"
+        },
+        {
+          "comment": "RisingWave streaming keywords",
+          "name": "keyword.control.risingwave.streaming",
+          "match": "(?i)\\b(EMIT\\s+ON\\s+WINDOW\\s+CLOSE|EMIT\\s+ON\\s+UPDATE|EMIT\\s+IMMEDIATELY|WATERMARK\\s+FOR|WITH\\s+WATERMARK|ASOF\\s+JOIN|ASOF\\s+LEFT\\s+JOIN|TEMPORAL\\s+JOIN|INCLUDE\\s+KEY|INCLUDE\\s+TIMESTAMP|INCLUDE\\s+PARTITION|INCLUDE\\s+OFFSET|INCLUDE\\s+HEADER)\\b"
+        },
+        {
+          "comment": "RisingWave window types",
+          "name": "keyword.control.risingwave.window",
+          "match": "(?i)\\b(TUMBLE|HOP|SESSION|TUMBLE_START|TUMBLE_END|HOP_START|HOP_END|SESSION_START|SESSION_END)\\b"
+        },
+        {
+          "comment": "RisingWave format and encoding",
+          "name": "keyword.control.risingwave.format",
+          "match": "(?i)\\b(FORMAT|ENCODE|PLAIN|UPSERT|DEBEZIUM|MAXWELL|CANAL|JSON|AVRO|PROTOBUF|CSV|BYTES)\\b"
+        },
+        {
+          "comment": "RisingWave admin commands",
+          "name": "keyword.control.risingwave.admin",
+          "match": "(?i)\\b(SHOW\\s+SOURCES|SHOW\\s+SINKS|SHOW\\s+MATERIALIZED\\s+VIEWS|SHOW\\s+JOBS|SHOW\\s+CLUSTERS|SHOW\\s+INTERNAL\\s+TABLES|CANCEL\\s+JOBS?|RECOVER|FLUSH|PAUSE|RESUME|RISECTL)\\b"
+        },
+        {
+          "comment": "RisingWave options",
+          "name": "keyword.control.risingwave.option",
+          "match": "(?i)\\b(connector|type|primary_key|snapshot|snapshot\\.interval|snapshot\\.batch_size)\\b"
+        }
+      ]
+    },
+    "risingwave-functions": {
+      "patterns": [
+        {
+          "comment": "RisingWave built-in functions",
+          "name": "support.function.risingwave",
+          "match": "(?i)\\b(proctime|now|lag|lead|first_value|last_value|array_agg|string_agg|jsonb_agg|jsonb_object_agg)\\b"
+        }
+      ]
+    },
+    "risingwave-connectors": {
+      "patterns": [
+        {
+          "comment": "RisingWave connector names",
+          "name": "constant.language.risingwave.connector",
+          "match": "(?i)\\b(kafka|kinesis|pulsar|postgres-cdc|mysql-cdc|sqlserver-cdc|mongodb-cdc|datagen|nexmark|iceberg|jdbc|mongodb|snowflake|redis|elasticsearch|clickhouse|doris|starrocks|delta|s3|gcs|azblob)\\b"
+        }
+      ]
+    },
+    "risingwave-types": {
+      "patterns": [
+        {
+          "comment": "RisingWave data types",
+          "name": "storage.type.risingwave",
+          "match": "(?i)\\b(STRUCT|JSONB|BYTEA|TIMESTAMPTZ|TIMESTAMP\\s+WITH\\s+TIME\\s+ZONE|RWTIMESTAMP)\\b"
+        }
+      ]
+    },
+    "postgresql-keywords": {
+      "patterns": [
+        {
+          "comment": "PostgreSQL DML",
+          "name": "keyword.other.postgresql.dml",
+          "match": "(?i)\\b(SELECT|INSERT|UPDATE|DELETE|FROM|WHERE|AND|OR|NOT|IN|EXISTS|BETWEEN|LIKE|ILIKE|IS|NULL|TRUE|FALSE|CASE|WHEN|THEN|ELSE|END|AS|ON|USING|NATURAL|CROSS|INNER|LEFT|RIGHT|FULL|OUTER|JOIN|GROUP\\s+BY|HAVING|ORDER\\s+BY|LIMIT|OFFSET|FETCH|FIRST|NEXT|ROWS?|ONLY|UNION|INTERSECT|EXCEPT|ALL|DISTINCT|INTO|VALUES|SET|RETURNING)\\b"
+        },
+        {
+          "comment": "PostgreSQL DDL",
+          "name": "keyword.other.postgresql.ddl",
+          "match": "(?i)\\b(CREATE|ALTER|DROP|TABLE|VIEW|INDEX|SCHEMA|DATABASE|SEQUENCE|FUNCTION|PROCEDURE|TRIGGER|TYPE|DOMAIN|CONSTRAINT|PRIMARY\\s+KEY|FOREIGN\\s+KEY|UNIQUE|CHECK|DEFAULT|REFERENCES|CASCADE|RESTRICT|NO\\s+ACTION|IF\\s+EXISTS|IF\\s+NOT\\s+EXISTS|WITH|WITHOUT)\\b"
+        },
+        {
+          "comment": "PostgreSQL transaction",
+          "name": "keyword.other.postgresql.transaction",
+          "match": "(?i)\\b(BEGIN|COMMIT|ROLLBACK|SAVEPOINT|RELEASE|TRANSACTION|ISOLATION|LEVEL|READ|WRITE|COMMITTED|UNCOMMITTED|REPEATABLE|SERIALIZABLE)\\b"
+        },
+        {
+          "comment": "PostgreSQL data types",
+          "name": "storage.type.postgresql",
+          "match": "(?i)\\b(BOOLEAN|BOOL|SMALLINT|INT2|INTEGER|INT|INT4|BIGINT|INT8|REAL|FLOAT4|DOUBLE\\s+PRECISION|FLOAT8|NUMERIC|DECIMAL|CHAR|CHARACTER|VARCHAR|CHARACTER\\s+VARYING|TEXT|DATE|TIME|TIMESTAMP|INTERVAL|UUID|SERIAL|BIGSERIAL|SMALLSERIAL|ARRAY|JSON|XML)\\b"
+        }
+      ]
+    },
+    "postgresql-functions": {
+      "patterns": [
+        {
+          "comment": "PostgreSQL aggregate functions",
+          "name": "support.function.postgresql.aggregate",
+          "match": "(?i)\\b(COUNT|SUM|AVG|MIN|MAX|ARRAY_AGG|STRING_AGG|BOOL_AND|BOOL_OR|BIT_AND|BIT_OR|EVERY|COALESCE|NULLIF|GREATEST|LEAST)\\b"
+        },
+        {
+          "comment": "PostgreSQL string functions",
+          "name": "support.function.postgresql.string",
+          "match": "(?i)\\b(CONCAT|LENGTH|LOWER|UPPER|TRIM|LTRIM|RTRIM|SUBSTRING|SUBSTR|REPLACE|POSITION|SPLIT_PART|REGEXP_REPLACE|REGEXP_MATCH|LEFT|RIGHT|REPEAT|REVERSE|LPAD|RPAD|INITCAP|TRANSLATE|OVERLAY)\\b"
+        },
+        {
+          "comment": "PostgreSQL date/time functions",
+          "name": "support.function.postgresql.datetime",
+          "match": "(?i)\\b(CURRENT_DATE|CURRENT_TIME|CURRENT_TIMESTAMP|NOW|LOCALTIME|LOCALTIMESTAMP|DATE_TRUNC|DATE_PART|EXTRACT|AGE|MAKE_DATE|MAKE_TIME|MAKE_TIMESTAMP|TO_CHAR|TO_DATE|TO_TIMESTAMP|DATE_ADD|DATE_SUB)\\b"
+        },
+        {
+          "comment": "PostgreSQL JSON functions",
+          "name": "support.function.postgresql.json",
+          "match": "(?i)\\b(JSON_BUILD_OBJECT|JSON_BUILD_ARRAY|JSON_AGG|JSONB_BUILD_OBJECT|JSONB_BUILD_ARRAY|JSONB_AGG|JSON_EXTRACT_PATH|JSONB_EXTRACT_PATH|JSON_EXTRACT_PATH_TEXT|JSONB_EXTRACT_PATH_TEXT|JSON_ARRAY_LENGTH|JSONB_ARRAY_LENGTH|JSON_TYPEOF|JSONB_TYPEOF|TO_JSON|TO_JSONB|ROW_TO_JSON)\\b"
+        },
+        {
+          "comment": "PostgreSQL window functions",
+          "name": "support.function.postgresql.window",
+          "match": "(?i)\\b(ROW_NUMBER|RANK|DENSE_RANK|PERCENT_RANK|CUME_DIST|NTILE|LAG|LEAD|FIRST_VALUE|LAST_VALUE|NTH_VALUE)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.sql",
+          "match": "(=|<>|!=|<|>|<=|>=)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.sql",
+          "match": "(\\+|-|\\*|/|%|\\^)"
+        },
+        {
+          "name": "keyword.operator.json.sql",
+          "match": "(->|->>|#>|#>>|@>|<@|\\?|\\?\\||\\?&|\\|\\||&&)"
+        },
+        {
+          "name": "keyword.operator.assignment.sql",
+          "match": ":="
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.sql",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
     }
-  ]
+  }
 }

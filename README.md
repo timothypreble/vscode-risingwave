@@ -1,103 +1,166 @@
 # RisingWave SQL for VS Code
 
-This extension adds full support for `.rw` files in Visual Studio Code:
+A VS Code extension for developing RisingWave streaming SQL pipelines.
 
-- Syntax highlighting for RisingWave-specific SQL constructs
-- Optional RisingWave dark theme with orange keywords
-- Rich code snippets for RisingWave, Postgres, and file headers
-- File decorations (RW badge) in the explorer for easy identification
+## Features
 
-## Features Summary
+| Feature | `.rw` Files | `.sql` Files |
+|---------|-------------|--------------|
+| Syntax Highlighting | ✅ RisingWave + PostgreSQL | ✅ PostgreSQL only |
+| Code Snippets | ✅ RisingWave + PostgreSQL | ✅ PostgreSQL only |
+| Hover Documentation | ✅ RisingWave keywords | ❌ |
+| Code Completion | ✅ Connectors, formats | ❌ |
+| File Icon | ✅ Custom `.rw` icon | Default SQL icon |
+| File Badge | ✅ Orange "RW" badge | ❌ |
 
-- **Syntax Highlighting:** Recognizes RisingWave SQL keywords and constructs
-- **Theme:** "RisingWave Theme" for a dark UI with orange highlights
-- **Snippets:** Quickly insert RisingWave, Postgres, and file header templates
-- **File Decorations:** Orange RW badge and tooltip for `.rw` files (works with any icon theme)
+## Syntax Highlighting
 
----
+RisingWave-specific keywords are highlighted in **orange** to distinguish them from standard PostgreSQL syntax:
 
-## Snippet Usage
+- **RisingWave DDL**: `CREATE SOURCE`, `CREATE SINK`, `CREATE MATERIALIZED VIEW`
+- **Streaming**: `EMIT ON WINDOW CLOSE`, `WATERMARK`, `ASOF JOIN`
+- **Windows**: `TUMBLE`, `HOP`, `SESSION`, `TUMBLE_START`, `HOP_END`
+- **Connectors**: `kafka`, `postgres-cdc`, `sqlserver-cdc`, `mongodb`, `snowflake`
+- **Formats**: `PLAIN`, `UPSERT`, `DEBEZIUM`, `JSON`, `AVRO`
 
-This extension provides code snippets for:
+PostgreSQL keywords use standard highlighting (blue in most themes).
 
-- **RisingWave SQL:** Materialized views, sources, ASOF joins, window aggregations, sinks, and more
-- **Postgres SQL:** Table creation, inserts, upserts, indexes, foreign keys, functions, window functions
-- **File Header:** Standard header block for SQL scripts
-
-**How to use:**
-
-1. Open a `.rw` or `.sql` file
-2. Type a snippet prefix (e.g., `mv`, `sourcekafka`, `table`, `header`)
-3. Select the snippet from the suggestion list
-
-**Example Snippet Prefixes:**
-
-- `mv` → Create Materialized View
-- `sourcekafka` → Create Kafka Source
-- `asof` → ASOF Join
-- `tumble` / `hop` → Window Aggregation
-- `sinkpg` → Create Postgres Sink
-- `table` → Create Table (Postgres)
-- `header` → File Header block
+**Works with any VS Code color theme!** For best results, use the included "RisingWave Theme".
 
 ---
 
-## File Icons
+## Hover Documentation
 
-Your extension includes a complete icon theme called "RisingWave Seti Icons" based on VS Code's Seti theme, with your custom `.rw` icon included.
+Hover over RisingWave keywords to see documentation:
 
-**How to enable:**
-1. Open command palette (`Ctrl+Shift+P`)
-2. Search for "File Icon Theme"  
-3. Select **RisingWave Seti Icons**
+- **Syntax** and usage examples
+- **Parameter descriptions** for connectors
+- **Links to official documentation**
 
-This provides:
-- ✅ Your custom `.rw` file icon (SVG)
-- ✅ All standard file type icons (JS, JSON, HTML, CSS, Python, etc.)
-- ✅ Familiar Seti icon style
-- ✅ No missing icons
-
-**Icon Theme Credits:**
-- Base theme: [Seti UI](https://github.com/jesseweed/seti-ui) by Jesse Weed
-- VS Code integration: [Microsoft VS Code Seti Theme](https://github.com/microsoft/vscode/tree/main/extensions/theme-seti)
-- Custom `.rw` icon: USXpress RisingWave team
-
-**Alternative:** You can also use any other icon theme you prefer - your `.rw` files will still get the orange "RW" badge for identification.
+Supported keywords include:
+- `CREATE SOURCE`, `CREATE SINK`, `CREATE MATERIALIZED VIEW`
+- `TUMBLE`, `HOP`, `EMIT ON WINDOW CLOSE`, `WATERMARK`, `ASOF JOIN`
+- Connector names: `kafka`, `postgres-cdc`, `sqlserver-cdc`, `mongodb`, `jdbc`, `snowflake`
 
 ---
 
-## File Decorations
+## Code Snippets
 
-All `.rw` files show an orange "RW" badge in the explorer, with a tooltip "RisingWave SQL file".
+### RisingWave Snippets (`.rw` files)
 
-This helps visually distinguish RisingWave SQL files from others and works with any icon theme.
+| Prefix | Description |
+|--------|-------------|
+| `mv` | Create Materialized View |
+| `mvwindow` | Materialized View with window |
+| **Sources** | |
+| `sourcekafka` | Kafka source |
+| `sourcekafkaupsert` | Kafka upsert source with primary key |
+| `sourcepgcdc` | PostgreSQL CDC source |
+| `sourcemssqlcdc` | SQL Server CDC source |
+| `sourcemysqlcdc` | MySQL CDC source |
+| `sourcedebezium` | Debezium via Kafka (IBM i, Oracle) |
+| `sourcedatagen` | Test data generator |
+| **Sinks** | |
+| `sinkmongo` | MongoDB sink |
+| `sinkpg` | PostgreSQL sink |
+| `sinkmssql` | SQL Server sink |
+| `sinkkafka` | Kafka sink |
+| `sinksnowflake` | Snowflake sink (via S3) |
+| **Windows & Joins** | |
+| `tumble` | Tumbling window |
+| `hop` | Hopping (sliding) window |
+| `emitclose` | EMIT ON WINDOW CLOSE |
+| `asof` | ASOF JOIN |
+| `watermark` | Watermark definition |
+| **Utility** | |
+| `proctime` | Processing time column |
+| `showsources` | SHOW SOURCES |
+| `showsinks` | SHOW SINKS |
+| `showmv` | SHOW MATERIALIZED VIEWS |
+
+### PostgreSQL Snippets (`.rw` and `.sql` files)
+
+| Prefix | Description |
+|--------|-------------|
+| `table` | CREATE TABLE |
+| `insert` | INSERT INTO |
+| `upsert` | INSERT ON CONFLICT |
+| `index` | CREATE INDEX |
+| `fk` | Foreign key constraint |
+| `func` | CREATE FUNCTION |
+| `win` | Window function |
+| `header` | File header block |
 
 ---
 
-## Usage
+## File Icons & Decorations
 
-1. Install the extension (`.vsix`)
-2. Open any `.rw` file
-3. Switch to **RisingWave Theme** from the command palette (`Ctrl+Shift+P` → "Color Theme")
+### Custom Icon
+`.rw` files display a custom RisingWave icon in the file explorer.
+
+To enable: Command Palette → "File Icon Theme" → **RisingWave Seti Icons**
+
+### File Badge
+All `.rw` files show an orange **"RW"** badge regardless of icon theme.
 
 ---
 
-## Build
-1. Install VSCE
-```bash
-npm install -g vsce
-```
+## Installation
 
-2. Package the extension
-```shell
-cd vscode-risingwave
-vsce package
-```
+### From VSIX (recommended for internal use)
 
-3. Install in VS Code:
-* Open VS Code
-* Press Ctrl+Shift+P → Extensions: Install from VSIX...
-* Select risingwave-sql-0.X.X.vsix
+1. Package the extension:
+   ```bash
+   npm install -g @vscode/vsce
+   cd vscode-risingwave
+   vsce package
+   ```
 
-4. View RW File
-Open .rw files → syntax highlighting, snippets, icons, and theme available.
+2. Install in VS Code:
+   - Press `Ctrl+Shift+P` → "Extensions: Install from VSIX..."
+   - Select `risingwave-sql-0.2.0.vsix`
+
+### Development
+
+1. Clone the repository
+2. Open in VS Code
+3. Press `F5` to launch Extension Development Host
+
+---
+
+## Supported Connectors
+
+### Sources (Data Ingestion)
+| Connector | Type | Snippet |
+|-----------|------|---------|
+| Kafka | Streaming | `sourcekafka` |
+| PostgreSQL CDC | CDC | `sourcepgcdc` |
+| SQL Server CDC | CDC | `sourcemssqlcdc` |
+| MySQL CDC | CDC | `sourcemysqlcdc` |
+| Debezium (Kafka) | CDC | `sourcedebezium` |
+| Datagen | Testing | `sourcedatagen` |
+
+### Sinks (Data Delivery)
+| Connector | Type | Snippet |
+|-----------|------|---------|
+| MongoDB | NoSQL | `sinkmongo` |
+| PostgreSQL | RDBMS | `sinkpg` |
+| SQL Server | RDBMS | `sinkmssql` |
+| Kafka | Streaming | `sinkkafka` |
+| Snowflake | Data Warehouse | `sinksnowflake` |
+
+---
+
+## Documentation
+
+- [RisingWave Docs](https://docs.risingwave.com)
+- [RisingWave GitHub](https://github.com/risingwavelabs/risingwave)
+- [PostgreSQL 15](https://www.postgresql.org/docs/15/)
+
+---
+
+## Credits
+
+- **RisingWave**: [RisingWave Labs](https://risingwave.com)
+- **Icon Theme Base**: [Seti UI](https://github.com/jesseweed/seti-ui)
+- **Extension**: USXpress

@@ -1,8 +1,8 @@
 {
   "name": "risingwave-sql",
   "displayName": "RisingWave SQL",
-  "description": "Syntax highlighting and theme support for RisingWave SQL (.rw files)",
-  "version": "0.1.4",
+  "description": "Syntax highlighting, code snippets, and hover documentation for RisingWave SQL (.rw files)",
+  "version": "0.2.0",
   "publisher": "USXpress",
   "engines": {
     "vscode": "^1.70.0"
@@ -11,6 +11,15 @@
     "Programming Languages",
     "Snippets"
   ],
+  "keywords": [
+    "risingwave",
+    "streaming",
+    "sql",
+    "kafka",
+    "cdc",
+    "materialized views",
+    "stream processing"
+  ],
   "icon": "icons/rw-icon.png",
   "main": "./extension.js",
   "activationEvents": [
@@ -18,15 +27,19 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://"
+    "url": "https://github.com/usxpressinc/vscode-risingwave"
   },
   "contributes": {
     "languages": [
       {
         "id": "risingwave-sql",
-        "aliases": ["RisingWave SQL", "rw"],
+        "aliases": ["RisingWave SQL", "rw", "risingwave"],
         "extensions": [".rw"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/rw.svg",
+          "dark": "./icons/rw.svg"
+        }
       }
     ],
     "grammars": [
@@ -40,6 +53,10 @@
       {
         "language": "risingwave-sql",
         "path": "./snippets/risingwave.json"
+      },
+      {
+        "language": "risingwave-sql",
+        "path": "./snippets/postgres.json"
       },
       {
         "language": "risingwave-sql",
@@ -67,6 +84,12 @@
         "label": "RisingWave Seti Icons", 
         "path": "./file-icons/vs-seti-icon-theme.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[risingwave-sql]": {
+        "editor.wordBasedSuggestions": "matchingDocuments",
+        "editor.suggest.insertMode": "replace"
+      }
+    }
   }
 }
