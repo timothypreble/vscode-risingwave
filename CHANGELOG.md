@@ -11,7 +11,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 - Hover range now covers the whole compound keyword (e.g. all of `CREATE MATERIALIZED VIEW`).
 - Completion offers every known connector (previously a 12-item subset).
 - Test suite (`npm test`): keyword/hover logic, real TextMate tokenization of the grammar, generated-file drift, and `package.json` contribution paths. ESLint config (`npm run lint`). `npm run verify` runs all three and is wired to `vscode:prepublish`.
-- `.gitignore`; `.vscodeignore` now excludes tooling, notes, and build artifacts from the package.
+- `.gitignore`; `.vscodeignore` now excludes tooling, notes, editor/agent config (`.cursor/`), and build artifacts from the package.
+- `npm run package` writes the vsix to `dist/` (gitignored) instead of the repo root.
 
 ### Changed
 - `type`, `connector`, `primary_key`, `snapshot.*` are only highlighted as RisingWave options inside option blocks, not globally.

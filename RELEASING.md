@@ -7,7 +7,7 @@ Distribution is a `.vsix` file installed via "Extensions: Install from VSIX...".
 ## 1. Pre-flight
 
 ```bash
-git status            # working tree must be clean, on main
+git status            # working tree must be clean, on dev
 npm ci                # install exact locked deps
 npm run verify        # check + lint + test
 ```
@@ -65,18 +65,40 @@ Optionally inspect the package contents:
 unzip -l dist/risingwave-sql-0.3.0.vsix
 ```
 
-## 6. Commit and tag
+## 6. Commit and open a release PR
 
 ```bash
 git add package.json package-lock.json CHANGELOG.md
 git commit -m "Release 0.3.0"
-git tag -a v0.3.0 -m "v0.3.0"
-git push && git push origin v0.3.0    # once a remote is configured
+git push
 ```
+
+Open a PR from `dev` to `main`. The `ci` check must pass. **Don't tag by hand**: merging the PR runs `.github/workflows/release.yml`, which tags `v0.3.0`, creates the GitHub Release, uses the matching `CHANGELOG.md` section as notes, and attaches `risingwave-sql-0.3.0.vsix`. If `v0.3.0` already exists, the merge only verifies and publishes nothing, so bump the version first.
 
 ## 7. Distribute
 
-Attach `dist/risingwave-sql-0.3.0.vsix` to the release (or share it internally). **Never commit `.vsix` files**; they're gitignored.
+Download `risingwave-sql-0.3.0.vsix` from the GitHub Release and share it. **Never commit `.vsix` files**; they're gitignored.
+
+## Automation
+
+| Event | Workflow | Result |
+| --- | --- | --- |
+| PR to `main` or `dev` | `ci.yml` | `npm run package` (includes verify); vsix uploaded as a workflow artifact |
+| Push to `dev` | `release.yml` | Rolling `dev` pre-release with `risingwave-sql-<version>-dev.<sha>.vsix`, replaced on every push |
+| Push to `main`, version not yet tagged | `release.yml` | Tag `vX.Y.Z` plus GitHub Release with the vsix |
+| Push to `main`, version already tagged | `release.yml` | Build and verify only |
+
+No secrets are needed; the workflows use the built-in `GITHUB_TOKEN`.
+
+### Dev builds
+
+Every push to `dev` refreshes the `dev` pre-release on the repo's GitHub Releases page. Install its vsix to try unreleased changes. The version inside it is the current `package.json` version, so don't treat it as a stable release.
+
+### One-time GitHub setup
+
+- Push `main` and `dev` to `origin`.
+- Protect `main` (Settings > Branches or Rulesets): require a PR and require the `ci` check.
+- Settings > Actions > General: workflow permissions must allow `contents: write`.
 
 ## Checklist
 
@@ -84,5 +106,5 @@ Attach `dist/risingwave-sql-0.3.0.vsix` to the release (or share it internally).
 - [ ] `npm version X.Y.Z --no-git-tag-version`
 - [ ] `CHANGELOG.md`: `[Unreleased]` → `[X.Y.Z] - YYYY-MM-DD`, new empty `[Unreleased]` added
 - [ ] `npm run package` succeeds; vsix smoke-tested
-- [ ] Commit `Release X.Y.Z`, tag `vX.Y.Z`, push
-- [ ] vsix attached / distributed
+- [ ] Commit `Release X.Y.Z`, push, open `dev` → `main` PR
+- [ ] PR merged; GitHub Release `vX.Y.Z` has the vsix attached

@@ -18,3 +18,4 @@ description: Design decisions
 - Documentation goes in /docs/**/*.md
 - Planning docs‒store in ./plans/**/*.md, use task lists (- [ ] / - [x]) and cross-link related docs.
 - Architecture, Design, Functionality, Principles go in .cursor/rules/*.mdc—be pithy and link back to /docs/.
+- After every major change record it in CHANGELOG.md
