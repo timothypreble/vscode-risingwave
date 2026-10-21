@@ -2,6 +2,30 @@
 
 A VS Code extension for developing RisingWave streaming SQL pipelines.
 
+## Installation
+
+### From GitHub Releases (recommended)
+
+1. Open the [Releases page](https://github.com/usxpressinc/vscode-risingwave/releases) and pick the latest stable release (`vX.Y.Z`).
+2. Under **Assets**, download `risingwave-sql-<version>.vsix`.
+3. Install it in VS Code, either:
+   - Press `Ctrl+Shift+P` (`Cmd+Shift+P` on macOS) → "Extensions: Install from VSIX..." and select the downloaded file, or
+   - Run `code --install-extension risingwave-sql-<version>.vsix`.
+4. Reload the window if VS Code prompts you, then open any `.rw` file.
+
+To update, download the newer `.vsix` and install it the same way; it replaces the installed version.
+
+Unreleased changes are published to the rolling **`dev`** pre-release on the same page (`risingwave-sql-<version>-dev.<sha>.vsix`). It's replaced on every push to `dev`, so use it only to try new work.
+
+### From source
+
+```bash
+npm ci
+npm run package
+```
+
+Then install the generated `dist/risingwave-sql-<version>.vsix` as above.
+
 ## Features
 
 | Feature | `.rw` Files | `.sql` Files |
@@ -122,21 +146,7 @@ All `.rw` files show an orange **"RW"** badge regardless of icon theme.
 
 ---
 
-## Installation
-
-### From VSIX (recommended for internal use)
-
-1. Package the extension:
-   ```bash
-   npm install
-   npm run package
-   ```
-
-2. Install in VS Code:
-   - Press `Ctrl+Shift+P` → "Extensions: Install from VSIX..."
-   - Select the generated `dist/risingwave-sql-<version>.vsix`
-
-### Development
+## Development
 
 1. Clone the repository and run `npm install`
 2. Open in VS Code, press `F5` to launch the Extension Development Host
