@@ -28,7 +28,8 @@
     "lint": "eslint .",
     "test": "node --test test/",
     "verify": "npm run check && npm run lint && npm test",
-    "package": "vsce package --no-dependencies",
+    "prepackage": "node -e \"require('fs').mkdirSync('dist', { recursive: true })\"",
+    "package": "vsce package --no-dependencies --out dist/",
     "vscode:prepublish": "npm run verify"
   },
   "devDependencies": {

@@ -49,7 +49,7 @@ Read through the entries once more. Each one should describe a change users can 
 ## 5. Build and smoke-test
 
 ```bash
-npm run package       # runs verify via vscode:prepublish, writes risingwave-sql-0.3.0.vsix
+npm run package       # runs verify via vscode:prepublish, writes dist/risingwave-sql-0.3.0.vsix
 ```
 
 Install it in a clean VS Code window (`Ctrl/Cmd+Shift+P` → "Extensions: Install from VSIX..."), open a `.rw` file, and check:
@@ -62,7 +62,7 @@ Install it in a clean VS Code window (`Ctrl/Cmd+Shift+P` → "Extensions: Instal
 Optionally inspect the package contents:
 
 ```bash
-unzip -l risingwave-sql-0.3.0.vsix
+unzip -l dist/risingwave-sql-0.3.0.vsix
 ```
 
 ## 6. Commit and tag
@@ -76,7 +76,7 @@ git push && git push origin v0.3.0    # once a remote is configured
 
 ## 7. Distribute
 
-Attach `risingwave-sql-0.3.0.vsix` to the release (or share it internally). **Never commit `.vsix` files**; they're gitignored.
+Attach `dist/risingwave-sql-0.3.0.vsix` to the release (or share it internally). **Never commit `.vsix` files**; they're gitignored.
 
 ## Checklist
 

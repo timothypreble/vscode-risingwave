@@ -1,6 +1,7 @@
 # Dev / tooling
 .vscode/
 .vscode-test/
+.cursor/
 node_modules/
 scripts/
 test/
@@ -12,6 +13,7 @@ package-lock.json
 
 # Artifacts and junk
 *.vsix
+dist/
 **/.DS_Store
 
 # Repo notes unrelated to the extension

@@ -134,7 +134,7 @@ All `.rw` files show an orange **"RW"** badge regardless of icon theme.
 
 2. Install in VS Code:
    - Press `Ctrl+Shift+P` → "Extensions: Install from VSIX..."
-   - Select the generated `risingwave-sql-<version>.vsix`
+   - Select the generated `dist/risingwave-sql-<version>.vsix`
 
 ### Development
 
@@ -148,7 +148,7 @@ All `.rw` files show an orange **"RW"** badge regardless of icon theme.
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests (hover logic, grammar tokenization, drift, manifest paths) |
 | `npm run verify` | `check` + `lint` + `test` (runs automatically on `vscode:prepublish`) |
-| `npm run package` | Build the `.vsix` |
+| `npm run package` | Build the `.vsix` into `dist/` |
 
 Keyword/connector/doc data lives in `data/risingwave.json`. Edit it, then run `npm run build`. Sections of `README.md` and `SKILL.md` between `<!-- GEN:* -->` markers are overwritten by the build.
 

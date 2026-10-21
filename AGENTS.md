@@ -12,7 +12,7 @@ VS Code language extension for `.rw` (RisingWave SQL). Plain CommonJS, no bundle
 ## Workflow
 - Edit `data/risingwave.json` or `snippets/*.json`, then `npm run build`. Never hand-edit between GEN markers or generated grammar `match`/`begin` lines.
 - `npm run verify` before commit/PR (check + lint + test). Also runs on `vscode:prepublish`.
-- `npm run package` builds the vsix. Do not commit `.vsix` files.
+- `npm run package` builds the vsix into `dist/` (gitignored). Do not commit `.vsix` files.
 - Releases: follow `RELEASING.md`. Don't bump the version unless asked.
 
 ## Tests
