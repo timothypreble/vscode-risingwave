@@ -1,0 +1,31 @@
+---
+description: Architecture, design, functionality and principles of the RisingWave SQL VS Code extension
+alwaysApply: false
+---
+
+# Architecture
+
+Declarative VS Code language extension. No server, DB, HTTP API, bundler or webview. Details: `docs/architecture.md`.
+
+- **Data** `data/risingwave.json` is the single source of truth (keywords, connectors, docs). Model: `docs/db/README.md`.
+- **Build** `scripts/build.js` regenerates grammar `generated:*` regexes and `GEN:*` sections in `README.md` / `SKILL.md`. `npm run check` detects drift.
+- **Runtime** `extension.js` (only `vscode` imports) registers file badge, hover, completion. Logic lives in `lib/keywords.js`.
+- **Static assets** grammar, snippets, theme, icon theme are wired in `package.json` → `contributes`. Contract: `docs/api.md`.
+
+# Design
+
+- Hover: longest compound keyword containing the cursor wins; falls back to the single word. Compound keywords match per line only.
+- Completion is context-free by design (full list every time).
+- Option keys (`type`, `connector`, …) and `JSON`/`AVRO` values highlight only in context (`WITH ( )`, after `ENCODE`/`FORMAT`).
+- Scope naming `<category>.<sub>.<dialect>.<role>`; orange = RisingWave, Dark+ colours = PostgreSQL. Every new scope needs a theme rule. Tokens: `docs/frontend.md`.
+
+# Functionality
+
+Highlighting, hover (26 docs), completion, 35 snippets, `RW` badge, icon theme, dark theme. Checklist with module pointers: `docs/features.md`. Flows: `docs/user-flows.md`.
+
+# Principles
+
+- Edit data/snippets, then `npm run build`; never hand-edit generated regions.
+- Keep `extension.js` thin; test via `lib/` and `test/grammar.test.js`.
+- `npm run verify` before commit. Record major changes in `CHANGELOG.md`.
+- Known gaps and open findings: `docs/audit.md`.

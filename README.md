@@ -1,12 +1,44 @@
 # RisingWave SQL for VS Code
 
-A VS Code extension for developing RisingWave streaming SQL pipelines.
+A VS Code extension for writing [RisingWave](https://risingwave.com) streaming SQL pipelines in `.rw` files.
+
+## What it does
+
+[RisingWave](https://docs.risingwave.com) is a PostgreSQL-compatible streaming database. Its SQL adds sources, sinks, continuously updated materialized views, windowing, watermarks and ASOF joins on top of standard PostgreSQL. This extension is an **authoring aid** for that dialect:
+
+- **Highlights** RisingWave-specific syntax in orange, apart from regular PostgreSQL syntax.
+- **Explains** keywords and connectors on hover, with syntax, parameters, examples and a docs link.
+- **Suggests** connectors, formats, encodings, window and streaming keywords as you type.
+- **Scaffolds** sources, sinks, views, windows and joins with 35 snippets.
+- **Marks** `.rw` files with an orange `RW` badge and an optional custom icon.
+
+It runs entirely locally. It does **not** connect to a RisingWave instance, run queries, or validate SQL. There is no backend, database or API; see [Architecture](docs/architecture.md).
+
+```sql
+-- orders.rw
+CREATE SOURCE orders (
+  order_id VARCHAR,
+  amount   DOUBLE PRECISION,
+  ts       TIMESTAMPTZ,
+  WATERMARK FOR ts AS ts - INTERVAL '5' SECOND
+) WITH (
+  connector = 'kafka',                           -- hover: connector docs
+  topic = 'orders',
+  properties.bootstrap.server = 'broker:9092'
+) FORMAT PLAIN ENCODE JSON;                      -- hover: FORMAT / ENCODE
+
+CREATE MATERIALIZED VIEW orders_per_minute AS    -- hover: CREATE MATERIALIZED VIEW
+SELECT window_start, COUNT(*) AS n, SUM(amount) AS total
+FROM TUMBLE(orders, ts, INTERVAL '1' MINUTE)
+GROUP BY window_start
+EMIT ON WINDOW CLOSE;
+```
 
 ## Installation
 
 ### From GitHub Releases (recommended)
 
-1. Open the [Releases page](https://github.com/usxpressinc/vscode-risingwave/releases) and pick the latest stable release (`vX.Y.Z`).
+1. Open the Releases page and pick the latest stable release (`vX.Y.Z`).
 2. Under **Assets**, download `risingwave-sql-<version>.vsix`.
 3. Install it in VS Code, either:
    - Press `Ctrl+Shift+P` (`Cmd+Shift+P` on macOS) → "Extensions: Install from VSIX..." and select the downloaded file, or
@@ -33,7 +65,7 @@ Then install the generated `dist/risingwave-sql-<version>.vsix` as above.
 | Syntax Highlighting | ✅ RisingWave + PostgreSQL | ✅ PostgreSQL only |
 | Code Snippets | ✅ RisingWave + PostgreSQL | ✅ PostgreSQL only |
 | Hover Documentation | ✅ RisingWave keywords | ❌ |
-| Code Completion | ✅ Connectors, formats | ❌ |
+| Code Completion | ✅ Connectors, formats, encodings, window/streaming keywords | ❌ |
 | File Icon | ✅ Custom `.rw` icon | Default SQL icon |
 | File Badge | ✅ Orange "RW" badge | ❌ |
 
@@ -69,7 +101,7 @@ Hover over RisingWave keywords to see documentation:
 
 Supported keywords include:
 <!-- GEN:hover START -->
-- `CREATE SOURCE`, `CREATE SINK`, `CREATE MATERIALIZED VIEW`, `TUMBLE`, `TUMBLE_START`, `TUMBLE_END`, `HOP`, `HOP_START`, `HOP_END`, `SESSION`, `EMIT ON WINDOW CLOSE`, `WATERMARK`, `ASOF JOIN`, `INCLUDE KEY`, `INCLUDE TIMESTAMP`, `proctime`, `FORMAT`, `ENCODE`
+- `CREATE SOURCE`, `CREATE SINK`, `CREATE MATERIALIZED VIEW`, `TUMBLE`, `TUMBLE_START`, `TUMBLE_END`, `HOP`, `HOP_START`, `HOP_END`, `SESSION`, `EMIT ON WINDOW CLOSE`, `WATERMARK`, `ASOF JOIN`, `ASOF LEFT JOIN`, `TEMPORAL JOIN`, `INCLUDE KEY`, `INCLUDE TIMESTAMP`, `proctime`, `FORMAT`, `ENCODE`
 - Connector names: `kafka`, `postgres-cdc`, `sqlserver-cdc`, `mongodb`, `snowflake`, `jdbc`
 <!-- GEN:hover END -->
 
@@ -146,10 +178,57 @@ All `.rw` files show an orange **"RW"** badge regardless of icon theme.
 
 ---
 
+## How it works
+
+Most features are declarative: `package.json` contributes a grammar, snippets, a theme and an icon theme, and VS Code does the rest. Only hover, completion and the `RW` badge run JavaScript (`extension.js`, with the logic in `lib/keywords.js`).
+
+```mermaid
+flowchart LR
+    D["data/risingwave.json<br/>keywords, connectors, docs"] --> B["npm run build"]
+    S["snippets/*.json"] --> B
+    B --> G["Grammar regexes<br/>+ README / SKILL tables"]
+    G --> VS["VS Code: highlighting"]
+    S --> VS2["VS Code: snippets"]
+    D --> K["lib/keywords.js"] --> E["extension.js"] --> VS3["VS Code: hover, completion, badge"]
+```
+
+`data/risingwave.json` is the single source of truth. Generated sections of this README (between `<!-- GEN:* -->` markers) and the grammar regexes are overwritten by `npm run build`; never edit them by hand.
+
+### Repository layout
+
+| Path | Purpose |
+|---|---|
+| `extension.js` | Activation; hover, completion and file-badge providers (the only file using the `vscode` API) |
+| `lib/keywords.js` | Pure doc-lookup, compound-keyword and completion logic (unit-testable) |
+| `data/risingwave.json` | Keyword groups, functions, types, formats, encodings, connectors, hover docs |
+| `scripts/build.js` | Regenerates grammar regexes and README/SKILL sections; `--check` detects drift |
+| `syntaxes/`, `snippets/`, `themes/`, `file-icons/`, `icons/` | Contributed assets |
+| `test/` | Keyword logic, real TextMate tokenization, drift and manifest checks |
+| `docs/` | Detailed documentation (see below) |
+| `.github/` | CI, release workflows, and the agent skill `skills/risingwave-sql/SKILL.md` |
+
+## Documentation
+
+| Document | Contents |
+|---|---|
+| [Architecture](docs/architecture.md) | Layers, runtime providers, grammar structure, build and CI |
+| [Data model](docs/db/README.md) | ERDs for `data/risingwave.json` and the snippet files (the repo has no database) |
+| [API surface](docs/api.md) | Contribution points and internal module API (there is no HTTP API or OpenAPI spec) |
+| [UI & theming](docs/frontend.md) | Colour tokens, scope naming rules, icons, hover layout |
+| [User flows](docs/user-flows.md) | Install, first use, authoring, power-user, contributor and release flows |
+| [Features](docs/features.md) | Feature checklist with pointers to the implementing modules |
+| [Audit](docs/audit.md) | Findings and known limitations |
+| [RELEASING.md](RELEASING.md) | How to cut a release |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
+
+---
+
 ## Development
 
 1. Clone the repository and run `npm install`
 2. Open in VS Code, press `F5` to launch the Extension Development Host
+3. Edit `data/risingwave.json` or `snippets/*.json`, then run `npm run build`
+4. Run `npm run verify` before committing; add a case to `test/grammar.test.js` for any highlighting change
 
 | Command | Purpose |
 |---------|---------|
