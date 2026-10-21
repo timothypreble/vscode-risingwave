@@ -1,0 +1,80 @@
+name: release
+
+on:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Read version
+        id: meta
+        run: |
+          version=$(node -p "require('./package.json').version")
+          vsix="dist/risingwave-sql-${version}.vsix"
+          publish=true
+          if [ "$GITHUB_REF_NAME" = "dev" ]; then
+            vsix="dist/risingwave-sql-${version}-dev.${GITHUB_SHA::7}.vsix"
+          elif git rev-parse -q --verify "refs/tags/v${version}" >/dev/null; then
+            publish=false
+            echo "::notice::v${version} is already released; bump the version to publish a new release."
+          fi
+          {
+            echo "version=${version}"
+            echo "vsix=${vsix}"
+            echo "publish=${publish}"
+          } >> "$GITHUB_OUTPUT"
+
+      # `package` runs verify (check + lint + test) via vscode:prepublish and writes dist/risingwave-sql-<version>.vsix
+      - name: Build vsix
+        run: |
+          npm run package
+          built="dist/risingwave-sql-${{ steps.meta.outputs.version }}.vsix"
+          target="${{ steps.meta.outputs.vsix }}"
+          [ "$built" = "$target" ] || mv "$built" "$target"
+
+      - name: Publish rolling dev pre-release
+        if: github.ref_name == 'dev'
+        run: |
+          gh release delete dev --cleanup-tag --yes || true
+          gh release create dev "${{ steps.meta.outputs.vsix }}" \
+            --prerelease \
+            --target "$GITHUB_SHA" \
+            --title "Dev build (${GITHUB_SHA::7})" \
+            --notes "Rolling pre-release built from \`dev\` at ${GITHUB_SHA}. Replaced on every push; do not rely on it for stable installs."
+
+      - name: Publish release
+        if: github.ref_name == 'main' && steps.meta.outputs.publish == 'true'
+        run: |
+          version="${{ steps.meta.outputs.version }}"
+          awk -v v="$version" '/^## \[/ { p = (index($0, "[" v "]") == 4) } p' CHANGELOG.md > release-notes.md
+          if [ -s release-notes.md ]; then
+            notes_flag=(--notes-file release-notes.md)
+          else
+            echo "::warning::No CHANGELOG.md section for ${version}; falling back to generated notes."
+            notes_flag=(--generate-notes)
+          fi
+          gh release create "v${version}" "${{ steps.meta.outputs.vsix }}" \
+            --target "$GITHUB_SHA" \
+            --title "v${version}" \
+            "${notes_flag[@]}"

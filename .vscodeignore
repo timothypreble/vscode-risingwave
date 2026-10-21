@@ -1,0 +1,25 @@
+# Dev / tooling
+.vscode/
+.vscode-test/
+.cursor/
+node_modules/
+scripts/
+test/
+eslint.config.js
+package-lock.json
+.github/
+.gitignore
+.vscodeignore
+
+# Artifacts and junk
+*.vsix
+dist/
+**/.DS_Store
+
+# Repo notes unrelated to the extension
+strategy.md
+strategy.txt
+tmp.txt
+AGENTS.md
+RELEASING.md
+conversations/

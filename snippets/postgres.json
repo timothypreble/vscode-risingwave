@@ -1,0 +1,70 @@
+{
+  "Create Table": {
+    "prefix": "table",
+    "body": [
+      "CREATE TABLE ${1:table_name} (",
+      "  ${2:id} SERIAL PRIMARY KEY,",
+      "  ${3:column_name} ${4:datatype} NOT NULL",
+      ");"
+    ],
+    "description": "Create a Postgres table"
+  },
+  "Insert Row": {
+    "prefix": "insert",
+    "body": [
+      "INSERT INTO ${1:table_name} (${2:column_list})",
+      "VALUES (${3:values});"
+    ],
+    "description": "Insert into a Postgres table"
+  },
+  "Upsert (ON CONFLICT)": {
+    "prefix": "upsert",
+    "body": [
+      "INSERT INTO ${1:table_name} (${2:columns})",
+      "VALUES (${3:values})",
+      "ON CONFLICT (${4:conflict_column})",
+      "DO UPDATE SET ${5:column} = EXCLUDED.${5:column};"
+    ],
+    "description": "Insert with conflict resolution"
+  },
+  "Create Index": {
+    "prefix": "index",
+    "body": [
+      "CREATE INDEX ${1:index_name}",
+      "ON ${2:table_name} (${3:column_name});"
+    ],
+    "description": "Create index on a table"
+  },
+  "Foreign Key Constraint": {
+    "prefix": "fk",
+    "body": [
+      "ALTER TABLE ${1:child_table}",
+      "ADD CONSTRAINT ${2:fk_name}",
+      "FOREIGN KEY (${3:child_column})",
+      "REFERENCES ${4:parent_table} (${5:parent_column});"
+    ],
+    "description": "Add a foreign key constraint"
+  },
+  "Create Function": {
+    "prefix": "func",
+    "body": [
+      "CREATE OR REPLACE FUNCTION ${1:function_name}(${2:args})",
+      "RETURNS ${3:return_type} AS $$",
+      "BEGIN",
+      "  ${4:-- function body}",
+      "END;",
+      "$$ LANGUAGE plpgsql;"
+    ],
+    "description": "Create a Postgres function"
+  },
+  "Window Function": {
+    "prefix": "win",
+    "body": [
+      "SELECT ${1:column},",
+      "       ${2:aggregate_function}(${3:target})",
+      "       OVER (PARTITION BY ${4:partition_col} ORDER BY ${5:order_col})",
+      "FROM ${6:table};"
+    ],
+    "description": "Window function example"
+  }
+}

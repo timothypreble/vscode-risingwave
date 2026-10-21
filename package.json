@@ -1,8 +1,8 @@
 {
   "name": "risingwave-sql",
   "displayName": "RisingWave SQL",
-  "description": "Syntax highlighting and theme support for RisingWave SQL (.rw files)",
-  "version": "0.1.4",
+  "description": "Syntax highlighting, code snippets, and hover documentation for RisingWave SQL (.rw files)",
+  "version": "0.2.0",
   "publisher": "USXpress",
   "engines": {
     "vscode": "^1.70.0"
@@ -11,22 +11,53 @@
     "Programming Languages",
     "Snippets"
   ],
+  "keywords": [
+    "risingwave",
+    "streaming",
+    "sql",
+    "kafka",
+    "cdc",
+    "materialized views",
+    "stream processing"
+  ],
   "icon": "icons/rw-icon.png",
   "main": "./extension.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "check": "node scripts/build.js --check",
+    "lint": "eslint .",
+    "test": "node --test test/",
+    "verify": "npm run check && npm run lint && npm test",
+    "prepackage": "node -e \"require('fs').mkdirSync('dist', { recursive: true })\"",
+    "package": "vsce package --no-dependencies --out dist/",
+    "vscode:prepublish": "npm run verify"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vscode/vsce": "^3.9.2",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2"
+  },
   "activationEvents": [
     "onLanguage:risingwave-sql"
   ],
   "repository": {
     "type": "git",
-    "url": "https://"
+    "url": "https://github.com/usxpressinc/vscode-risingwave"
   },
   "contributes": {
     "languages": [
       {
         "id": "risingwave-sql",
-        "aliases": ["RisingWave SQL", "rw"],
+        "aliases": ["RisingWave SQL", "rw", "risingwave"],
         "extensions": [".rw"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./icons/rw.svg",
+          "dark": "./icons/rw.svg"
+        }
       }
     ],
     "grammars": [
@@ -40,6 +71,10 @@
       {
         "language": "risingwave-sql",
         "path": "./snippets/risingwave.json"
+      },
+      {
+        "language": "risingwave-sql",
+        "path": "./snippets/postgres.json"
       },
       {
         "language": "risingwave-sql",
@@ -67,6 +102,12 @@
         "label": "RisingWave Seti Icons",
         "path": "./file-icons/vs-seti-icon-theme.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[risingwave-sql]": {
+        "editor.wordBasedSuggestions": "matchingDocuments",
+        "editor.suggest.insertMode": "replace"
+      }
+    }
   }
 }

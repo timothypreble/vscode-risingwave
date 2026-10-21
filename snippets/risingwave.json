@@ -1,0 +1,352 @@
+{
+  "Create Materialized View": {
+    "prefix": ["mv", "createmv"],
+    "body": [
+      "CREATE MATERIALIZED VIEW ${1:view_name} AS",
+      "SELECT ${2:*}",
+      "FROM ${3:source_table}",
+      "${4:WHERE ${5:condition}}",
+      "${6:GROUP BY ${7:columns}};"
+    ],
+    "description": "Create a RisingWave materialized view (continuously updated)"
+  },
+  "Create Materialized View with Window": {
+    "prefix": ["mvwindow", "mvtumble"],
+    "body": [
+      "CREATE MATERIALIZED VIEW ${1:view_name} AS",
+      "SELECT",
+      "  TUMBLE_START(${2:event_time}, INTERVAL '${3:1 hour}') AS window_start,",
+      "  TUMBLE_END(${2:event_time}, INTERVAL '${3:1 hour}') AS window_end,",
+      "  ${4:COUNT(*)} AS ${5:metric}",
+      "FROM ${6:source_table}",
+      "GROUP BY TUMBLE(${2:event_time}, INTERVAL '${3:1 hour}');"
+    ],
+    "description": "Create materialized view with tumbling window aggregation"
+  },
+
+  "-- SOURCES --": {},
+
+  "Create Source (Kafka)": {
+    "prefix": ["sourcekafka", "kafkasource"],
+    "body": [
+      "CREATE SOURCE ${1:source_name} (",
+      "  ${2:column_name} ${3:VARCHAR},",
+      "  ${4:event_time} TIMESTAMPTZ${5:,}",
+      "  ${6:WATERMARK FOR ${4:event_time} AS ${4:event_time} - INTERVAL '${7:5 seconds}'}",
+      ")",
+      "WITH (",
+      "  connector = 'kafka',",
+      "  topic = '${8:topic_name}',",
+      "  properties.bootstrap.server = '${9:localhost:9092}',",
+      "  scan.startup.mode = '${10|earliest,latest|}'",
+      ")",
+      "FORMAT ${11|PLAIN,UPSERT,DEBEZIUM|} ENCODE ${12|JSON,AVRO,PROTOBUF|};"
+    ],
+    "description": "Create a Kafka source for streaming data ingestion"
+  },
+  "Create Source (Kafka Upsert)": {
+    "prefix": ["sourcekafkaupsert", "kafkaupsert"],
+    "body": [
+      "CREATE SOURCE ${1:source_name} (",
+      "  PRIMARY KEY (rw_key),",
+      "  ${2:id} ${3:INT},",
+      "  ${4:data} ${5:VARCHAR}",
+      ")",
+      "INCLUDE KEY AS rw_key",
+      "WITH (",
+      "  connector = 'kafka',",
+      "  topic = '${6:topic_name}',",
+      "  properties.bootstrap.server = '${7:localhost:9092}'",
+      ")",
+      "FORMAT UPSERT ENCODE JSON;"
+    ],
+    "description": "Create a Kafka source with UPSERT format (requires primary key)"
+  },
+  "Create Source (PostgreSQL CDC)": {
+    "prefix": ["sourcepgcdc", "postgrescdc", "pgcdc"],
+    "body": [
+      "-- Step 1: Create CDC source connection",
+      "CREATE SOURCE ${1:pg_source} WITH (",
+      "  connector = 'postgres-cdc',",
+      "  hostname = '${2:localhost}',",
+      "  port = '${3:5432}',",
+      "  username = '${4:postgres}',",
+      "  password = '${5:password}',",
+      "  database.name = '${6:database}',",
+      "  schema.name = '${7:public}',",
+      "  slot.name = '${8:rw_slot}'",
+      ");",
+      "",
+      "-- Step 2: Create table from source",
+      "CREATE TABLE ${9:table_name} (*) FROM ${1:pg_source} TABLE '${7:public}.${10:upstream_table}';"
+    ],
+    "description": "Create a PostgreSQL CDC source for real-time replication"
+  },
+  "Create Source (SQL Server CDC)": {
+    "prefix": ["sourcemssqlcdc", "sqlservercdc", "mssqlcdc"],
+    "body": [
+      "-- Step 1: Create CDC source connection",
+      "CREATE SOURCE ${1:mssql_source} WITH (",
+      "  connector = 'sqlserver-cdc',",
+      "  hostname = '${2:localhost}',",
+      "  port = '${3:1433}',",
+      "  username = '${4:sa}',",
+      "  password = '${5:password}',",
+      "  database.name = '${6:database}'",
+      ");",
+      "",
+      "-- Step 2: Create table from source",
+      "CREATE TABLE ${7:table_name} (*) FROM ${1:mssql_source} TABLE '${8:dbo}.${9:upstream_table}';"
+    ],
+    "description": "Create a SQL Server CDC source for real-time replication"
+  },
+  "Create Source (MySQL CDC)": {
+    "prefix": ["sourcemysqlcdc", "mysqlcdc"],
+    "body": [
+      "-- Step 1: Create CDC source connection",
+      "CREATE SOURCE ${1:mysql_source} WITH (",
+      "  connector = 'mysql-cdc',",
+      "  hostname = '${2:localhost}',",
+      "  port = '${3:3306}',",
+      "  username = '${4:root}',",
+      "  password = '${5:password}',",
+      "  database.name = '${6:database}'",
+      ");",
+      "",
+      "-- Step 2: Create table from source",
+      "CREATE TABLE ${7:table_name} (*) FROM ${1:mysql_source} TABLE '${6:database}.${8:upstream_table}';"
+    ],
+    "description": "Create a MySQL CDC source for real-time replication"
+  },
+  "Create Source (Debezium via Kafka)": {
+    "prefix": ["sourcedebezium", "debeziumkafka"],
+    "body": [
+      "-- For IBM i, Oracle, or other databases via Debezium + Kafka",
+      "CREATE SOURCE ${1:source_name} (",
+      "  ${2:id} ${3:INT},",
+      "  ${4:data} ${5:VARCHAR},",
+      "  ${6:updated_at} TIMESTAMPTZ",
+      ")",
+      "WITH (",
+      "  connector = 'kafka',",
+      "  topic = '${7:debezium.schema.table}',",
+      "  properties.bootstrap.server = '${8:localhost:9092}'",
+      ")",
+      "FORMAT DEBEZIUM ENCODE JSON;"
+    ],
+    "description": "Create source from Debezium CDC via Kafka (IBM i, Oracle, etc.)"
+  },
+  "Create Source (Datagen)": {
+    "prefix": ["sourcedatagen", "datagen"],
+    "body": [
+      "-- Test data generator source",
+      "CREATE SOURCE ${1:datagen_source} (",
+      "  ${2:id} INT,",
+      "  ${3:value} VARCHAR,",
+      "  ${4:ts} TIMESTAMPTZ",
+      ")",
+      "WITH (",
+      "  connector = 'datagen',",
+      "  fields.${2:id}.kind = 'sequence',",
+      "  fields.${2:id}.start = '1',",
+      "  fields.${3:value}.kind = 'random',",
+      "  fields.${3:value}.length = '10',",
+      "  fields.${4:ts}.kind = 'now',",
+      "  datagen.rows.per.second = '${5:100}'",
+      ")",
+      "FORMAT PLAIN ENCODE JSON;"
+    ],
+    "description": "Create a datagen source for testing (generates mock data)"
+  },
+
+  "-- SINKS --": {},
+
+  "Create Sink (MongoDB)": {
+    "prefix": ["sinkmongo", "mongodbsink"],
+    "body": [
+      "CREATE SINK ${1:sink_name} FROM ${2:source_mv}",
+      "WITH (",
+      "  connector = 'mongodb',",
+      "  type = '${3|upsert,append-only|}',",
+      "  mongodb.url = 'mongodb://${4:localhost}:27017/?replicaSet=${5:rs0}',",
+      "  collection.name = '${6:database}.${7:collection}'${8:,}",
+      "  ${9:primary_key = '${10:id}'}",
+      ");"
+    ],
+    "description": "Create a MongoDB sink for data delivery"
+  },
+  "Create Sink (PostgreSQL)": {
+    "prefix": ["sinkpg", "postgresink", "pgsink"],
+    "body": [
+      "CREATE SINK ${1:sink_name} FROM ${2:source_mv}",
+      "WITH (",
+      "  connector = 'jdbc',",
+      "  jdbc.url = 'jdbc:postgresql://${3:localhost}:5432/${4:database}',",
+      "  jdbc.username = '${5:postgres}',",
+      "  jdbc.password = '${6:password}',",
+      "  table.name = '${7:target_table}',",
+      "  type = '${8|upsert,append-only|}',",
+      "  primary_key = '${9:id}'",
+      ");"
+    ],
+    "description": "Create a PostgreSQL sink via JDBC"
+  },
+  "Create Sink (SQL Server)": {
+    "prefix": ["sinkmssql", "sqlserversink", "mssqlsink"],
+    "body": [
+      "CREATE SINK ${1:sink_name} FROM ${2:source_mv}",
+      "WITH (",
+      "  connector = 'jdbc',",
+      "  jdbc.url = 'jdbc:sqlserver://${3:localhost}:1433;databaseName=${4:database}',",
+      "  jdbc.username = '${5:sa}',",
+      "  jdbc.password = '${6:password}',",
+      "  table.name = '${7:dbo.target_table}',",
+      "  type = '${8|upsert,append-only|}',",
+      "  primary_key = '${9:id}'",
+      ");"
+    ],
+    "description": "Create a SQL Server sink via JDBC"
+  },
+  "Create Sink (Kafka)": {
+    "prefix": ["sinkkafka", "kafkasink"],
+    "body": [
+      "CREATE SINK ${1:sink_name} FROM ${2:source_mv}",
+      "WITH (",
+      "  connector = 'kafka',",
+      "  properties.bootstrap.server = '${3:localhost:9092}',",
+      "  topic = '${4:output_topic}'${5:,}",
+      "  ${6:primary_key = '${7:id}'}",
+      ")",
+      "FORMAT ${8|PLAIN,UPSERT,DEBEZIUM|} ENCODE ${9|JSON,AVRO,PROTOBUF|};"
+    ],
+    "description": "Create a Kafka sink for data delivery"
+  },
+  "Create Sink (Snowflake)": {
+    "prefix": ["sinksnowflake", "snowflakesink"],
+    "body": [
+      "-- Requires Snowpipe setup with S3 staging",
+      "CREATE SINK ${1:sink_name} FROM ${2:source_mv}",
+      "WITH (",
+      "  connector = 'snowflake',",
+      "  type = 'append-only',",
+      "  s3.bucket_name = '${3:staging-bucket}',",
+      "  s3.path = '${4:risingwave/data}',",
+      "  s3.region_name = '${5:us-west-2}',",
+      "  s3.credentials.access = '${6:AWS_ACCESS_KEY}',",
+      "  s3.credentials.secret = '${7:AWS_SECRET_KEY}',",
+      "  force_append_only = 'true'",
+      ");"
+    ],
+    "description": "Create a Snowflake sink (via S3 + Snowpipe)"
+  },
+
+  "-- WINDOW FUNCTIONS --": {},
+
+  "Window Aggregation (Tumbling)": {
+    "prefix": ["tumble", "tumblewindow"],
+    "body": [
+      "SELECT",
+      "  TUMBLE_START(${1:event_time}, INTERVAL '${2:5 minutes}') AS window_start,",
+      "  TUMBLE_END(${1:event_time}, INTERVAL '${2:5 minutes}') AS window_end,",
+      "  ${3:COUNT(*)} AS ${4:cnt}",
+      "FROM ${5:source_table}",
+      "GROUP BY TUMBLE(${1:event_time}, INTERVAL '${2:5 minutes}');"
+    ],
+    "description": "Tumbling window aggregation (non-overlapping fixed windows)"
+  },
+  "Window Aggregation (Hopping)": {
+    "prefix": ["hop", "hopwindow", "sliding"],
+    "body": [
+      "SELECT",
+      "  HOP_START(${1:event_time}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}') AS window_start,",
+      "  HOP_END(${1:event_time}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}') AS window_end,",
+      "  ${4:AVG(${5:value})} AS ${6:avg_value}",
+      "FROM ${7:source_table}",
+      "GROUP BY HOP(${1:event_time}, INTERVAL '${2:1 minute}', INTERVAL '${3:5 minutes}');"
+    ],
+    "description": "Hopping window aggregation (overlapping sliding windows)"
+  },
+  "Emit on Window Close": {
+    "prefix": ["emitclose", "emitonclose"],
+    "body": [
+      "EMIT ON WINDOW CLOSE"
+    ],
+    "description": "Emit results only when window closes (append-only output)"
+  },
+
+  "-- JOINS --": {},
+
+  "ASOF Join": {
+    "prefix": ["asof", "asofjoin"],
+    "body": [
+      "SELECT ${1:a.*}, ${2:b.*}",
+      "FROM ${3:table_a} AS a",
+      "ASOF JOIN ${4:table_b} AS b",
+      "ON a.${5:key_col} = b.${6:key_col}",
+      "  AND a.${7:time_col} >= b.${8:time_col};"
+    ],
+    "description": "ASOF JOIN for time-series data (matches with nearest timestamp)"
+  },
+  "Temporal Join": {
+    "prefix": ["temporaljoin", "temporal"],
+    "body": [
+      "SELECT ${1:s.*}, ${2:t.*}",
+      "FROM ${3:stream_table} AS s",
+      "LEFT JOIN ${4:temporal_table} FOR SYSTEM_TIME AS OF proctime() AS t",
+      "ON s.${5:key_col} = t.${6:key_col};"
+    ],
+    "description": "Temporal join with versioned table"
+  },
+
+  "-- WATERMARKS --": {},
+
+  "Watermark Definition": {
+    "prefix": ["watermark", "watermarkfor"],
+    "body": [
+      "WATERMARK FOR ${1:event_time} AS ${1:event_time} - INTERVAL '${2:5 seconds}'"
+    ],
+    "description": "Define watermark for event-time processing"
+  },
+
+  "-- UTILITY --": {},
+
+  "Generated Column (proctime)": {
+    "prefix": ["proctime", "processingtime"],
+    "body": [
+      "${1:ingestion_time} TIMESTAMPTZ AS proctime()"
+    ],
+    "description": "Generated column with processing time"
+  },
+  "Generated Column (computed)": {
+    "prefix": ["computed", "generatedcol"],
+    "body": [
+      "${1:computed_col} ${2:DECIMAL} AS ${3:column_a} ${4:*} ${5:column_b}"
+    ],
+    "description": "Generated computed column"
+  },
+  "Show Sources": {
+    "prefix": ["showsources"],
+    "body": ["SHOW SOURCES;"],
+    "description": "List all sources"
+  },
+  "Show Sinks": {
+    "prefix": ["showsinks"],
+    "body": ["SHOW SINKS;"],
+    "description": "List all sinks"
+  },
+  "Show Materialized Views": {
+    "prefix": ["showmv", "showmviews"],
+    "body": ["SHOW MATERIALIZED VIEWS;"],
+    "description": "List all materialized views"
+  },
+  "Describe": {
+    "prefix": ["desc", "describe"],
+    "body": ["DESCRIBE ${1:object_name};"],
+    "description": "Describe a source, table, or view"
+  },
+  "Explain": {
+    "prefix": ["explain"],
+    "body": ["EXPLAIN ${1:SELECT * FROM table};"],
+    "description": "Show query execution plan"
+  }
+}

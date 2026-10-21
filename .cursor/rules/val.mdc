@@ -1,0 +1,21 @@
+---
+description: Design decisions
+---
+
+# Val
+
+- Conventions‒extend existing code style and architecture—never reinvent.
+- Self-documenting code‒expressive identifiers, minimal explanatory comments.
+- DRY + KISS‒reuse abstractions and ship the simplest working solution.
+
+- Explicit error handling‒no uncaught exceptions.
+
+- Docstrings on every public symbol.
+- Rule upkeep‒if ./cursor/rules is missing or stale, propose updates; flag any legacy .cursorrules file at once.
+- Dev-friendly scripts‒shell scripts must print clear, colourised output.
+
+
+- Documentation goes in /docs/**/*.md
+- Planning docs‒store in ./plans/**/*.md, use task lists (- [ ] / - [x]) and cross-link related docs.
+- Architecture, Design, Functionality, Principles go in .cursor/rules/*.mdc—be pithy and link back to /docs/.
+- After every major change record it in CHANGELOG.md
