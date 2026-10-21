@@ -391,6 +391,28 @@
       ],
       "docUrl": "https://docs.risingwave.com/sql/query-syntax/joins"
     },
+    "ASOF LEFT JOIN": {
+      "syntax": "table_a ASOF LEFT JOIN table_b ON condition",
+      "description": "Like ASOF JOIN, but keeps rows from the left table that have no match in the right table (right columns are NULL).",
+      "example": [
+        "SELECT t.*, q.bid, q.ask",
+        "FROM trades t",
+        "ASOF LEFT JOIN quotes q",
+        "ON t.symbol = q.symbol AND t.trade_time >= q.quote_time;"
+      ],
+      "docUrl": "https://docs.risingwave.com/sql/query-syntax/joins"
+    },
+    "TEMPORAL JOIN": {
+      "syntax": "stream_table [LEFT] JOIN versioned_table FOR SYSTEM_TIME AS OF PROCTIME() ON condition",
+      "description": "Joins a stream with the current version of a table at processing time. Updates to the table do not retroactively change earlier join results.",
+      "example": [
+        "SELECT s.*, t.*",
+        "FROM stream_table AS s",
+        "LEFT JOIN temporal_table FOR SYSTEM_TIME AS OF PROCTIME() AS t",
+        "ON s.key_col = t.key_col;"
+      ],
+      "docUrl": "https://docs.risingwave.com/sql/query-syntax/joins"
+    },
     "INCLUDE KEY": {
       "syntax": "INCLUDE KEY AS column_name",
       "description": "Extracts the message key from Kafka as a separate column. Required for UPSERT format.",

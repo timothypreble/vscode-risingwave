@@ -14,13 +14,18 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); version
 - `.gitignore`; `.vscodeignore` now excludes tooling, notes, editor/agent config (`.cursor/`), and build artifacts from the package.
 - `npm run package` writes the vsix to `dist/` (gitignored) instead of the repo root.
 
+- Documentation set in `docs/`: architecture, data model (ERDs), extension API surface, UI and theming, user flows (Mermaid), feature checklist, and an audit of findings. `.cursor/rules/architecture.mdc` summarizes it for agents.
+
 ### Changed
+- README overhauled: what the extension does, example, how it works, repository layout, documentation index, expanded development steps. Completion row in the feature table now lists everything completion offers.
+- `.vscodeignore` excludes `docs/` and `plans/` from the vsix.
 - `type`, `connector`, `primary_key`, `snapshot.*` are only highlighted as RisingWave options inside option blocks, not globally.
 - `JSON`, `AVRO`, `PLAIN`, ... are only highlighted as format/encoding values after `FORMAT` / `ENCODE`; bare `JSON` is a PostgreSQL type again.
 - RisingWave function scope now contains only `proctime`; `LAG`, `LEAD`, `NOW`, `array_agg`, ... are PostgreSQL functions.
 - README snippet/connector tables are generated from `snippets/*.json` and now list every snippet and connector.
 
 ### Fixed
+- Hover now works on `ASOF LEFT JOIN` and `TEMPORAL JOIN` (new doc entries; previously the longest compound had no doc and nothing showed).
 - Hover matched a compound keyword anywhere earlier on the line (e.g. hovering `my_src` in `CREATE SOURCE my_src` showed the `CREATE SOURCE` doc). Now only matches when the cursor is inside the keyword.
 - Hover on `WATERMARK FOR` never showed the `WATERMARK` doc.
 - Compound keywords separated by multiple spaces or tabs were not recognized by hover.

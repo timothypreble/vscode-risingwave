@@ -74,3 +74,16 @@ test('completion lists are non-empty and deduplicated', () => {
     assert.equal(new Set(list).size, list.length, `${name} has duplicates`);
   }
 });
+
+test('join keywords resolve to their own hover doc (longest compound wins, no fallback to a shorter one)', () => {
+  const cases = [
+    ['t ASOF LEFT JOIN q', 8, 'ASOF LEFT JOIN'],
+    ['t ASOF JOIN q', 8, 'ASOF JOIN'],
+    ['s TEMPORAL JOIN u', 5, 'TEMPORAL JOIN']
+  ];
+  for (const [line, ch, expected] of cases) {
+    const compound = findCompoundKeywordAt(line, ch);
+    const doc = compound && findDoc(compound.keyword);
+    assert.equal(doc && doc.keyword, expected, JSON.stringify([line, ch]));
+  }
+});
