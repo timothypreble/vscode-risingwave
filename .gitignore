@@ -1,0 +1,12 @@
+# AI-KT Conversations
+conversations/*
+
+# Build artifacts (package with `vsce package`; attach to GitHub releases instead of committing)
+*.vsix
+
+# OS / editor
+.DS_Store
+.vscode-test/
+
+# Dependencies
+node_modules/

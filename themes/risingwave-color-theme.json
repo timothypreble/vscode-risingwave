@@ -33,11 +33,21 @@
       }
     },
     {
-      "name": "RisingWave Connectors",
-      "scope": "constant.language.risingwave.connector",
+      "name": "RisingWave Connectors and Format Values",
+      "scope": [
+        "constant.language.risingwave.connector",
+        "constant.language.risingwave.format"
+      ],
       "settings": {
         "foreground": "#FF6600",
         "fontStyle": "bold"
+      }
+    },
+    {
+      "name": "RisingWave Option Keys",
+      "scope": "variable.parameter.risingwave.option",
+      "settings": {
+        "foreground": "#9CDCFE"
       }
     },
     {

@@ -5,6 +5,10 @@ compatibility:
   - vscode-copilot
   - windsurf
   - claude-code
+  - github-copilot
+  - cursor
+  - codeium
+
 metadata:
   author: USXpress
   tags:
@@ -535,12 +539,35 @@ HAVING COUNT(*) > 5;
 
 ## Snippet Prefixes
 
+<!-- Generated from snippets/risingwave.json by `npm run build` — do not edit by hand -->
+<!-- GEN:snippets START -->
 | Prefix | Description |
-|--------|-------------|
-| `mv` | Create Materialized View |
-| `sourcekafka` | Create Kafka Source |
-| `sinkpg` | Create PostgreSQL Sink |
-| `tumble` | Tumbling Window Aggregation |
-| `hop` | Hopping Window Aggregation |
-| `asof` | ASOF Join |
-| `emitclose` | Emit on Window Close |
+|---|---|
+| `mv` | Create a RisingWave materialized view (continuously updated) |
+| `mvwindow` | Create materialized view with tumbling window aggregation |
+| `sourcekafka` | Create a Kafka source for streaming data ingestion |
+| `sourcekafkaupsert` | Create a Kafka source with UPSERT format (requires primary key) |
+| `sourcepgcdc` | Create a PostgreSQL CDC source for real-time replication |
+| `sourcemssqlcdc` | Create a SQL Server CDC source for real-time replication |
+| `sourcemysqlcdc` | Create a MySQL CDC source for real-time replication |
+| `sourcedebezium` | Create source from Debezium CDC via Kafka (IBM i, Oracle, etc.) |
+| `sourcedatagen` | Create a datagen source for testing (generates mock data) |
+| `sinkmongo` | Create a MongoDB sink for data delivery |
+| `sinkpg` | Create a PostgreSQL sink via JDBC |
+| `sinkmssql` | Create a SQL Server sink via JDBC |
+| `sinkkafka` | Create a Kafka sink for data delivery |
+| `sinksnowflake` | Create a Snowflake sink (via S3 + Snowpipe) |
+| `tumble` | Tumbling window aggregation (non-overlapping fixed windows) |
+| `hop` | Hopping window aggregation (overlapping sliding windows) |
+| `emitclose` | Emit results only when window closes (append-only output) |
+| `asof` | ASOF JOIN for time-series data (matches with nearest timestamp) |
+| `temporaljoin` | Temporal join with versioned table |
+| `watermark` | Define watermark for event-time processing |
+| `proctime` | Generated column with processing time |
+| `computed` | Generated computed column |
+| `showsources` | List all sources |
+| `showsinks` | List all sinks |
+| `showmv` | List all materialized views |
+| `desc` | Describe a source, table, or view |
+| `explain` | Show query execution plan |
+<!-- GEN:snippets END -->

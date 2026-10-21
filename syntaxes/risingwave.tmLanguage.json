@@ -5,11 +5,11 @@
   "name": "RisingWave SQL",
   "patterns": [
     { "include": "#comments" },
+    { "include": "#risingwave-option-blocks" },
     { "include": "#strings" },
     { "include": "#numbers" },
     { "include": "#risingwave-keywords" },
     { "include": "#risingwave-functions" },
-    { "include": "#risingwave-connectors" },
     { "include": "#risingwave-types" },
     { "include": "#postgresql-keywords" },
     { "include": "#postgresql-functions" },
@@ -63,64 +63,126 @@
         }
       ]
     },
+    "risingwave-option-blocks": {
+      "patterns": [
+        {
+          "comment": "WITH ( key = value, ... ) option block",
+          "begin": "(?i)\\b(WITH)\\s*(\\()",
+          "beginCaptures": {
+            "1": { "name": "keyword.other.postgresql.ddl" },
+            "2": { "name": "punctuation.section.parens.begin.sql" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.parens.end.sql" }
+          },
+          "patterns": [{ "include": "#risingwave-option-body" }]
+        },
+        {
+          "comment": "generated:encode-options — ENCODE AVRO ( key = value, ... ) option block",
+          "begin": "(?i)\\b(ENCODE)\\s+(PROTOBUF|BYTES|JSON|AVRO|CSV)\\s*(\\()",
+          "beginCaptures": {
+            "1": { "name": "keyword.control.risingwave.format" },
+            "2": { "name": "constant.language.risingwave.format" },
+            "3": { "name": "punctuation.section.parens.begin.sql" }
+          },
+          "end": "\\)",
+          "endCaptures": {
+            "0": { "name": "punctuation.section.parens.end.sql" }
+          },
+          "patterns": [{ "include": "#risingwave-option-body" }]
+        }
+      ]
+    },
+    "risingwave-option-body": {
+      "patterns": [
+        { "include": "#comments" },
+        {
+          "comment": "generated:connector-value — connector = 'kafka'",
+          "match": "(?i)\\b(connector)\\s*(=)\\s*(')(sqlserver-cdc|elasticsearch|postgres-cdc|mongodb-cdc|clickhouse|mysql-cdc|snowflake|starrocks|kinesis|datagen|nexmark|mongodb|iceberg|pulsar|azblob|kafka|doris|delta|redis|jdbc|gcs|s3)(')",
+          "captures": {
+            "1": { "name": "keyword.control.risingwave.option" },
+            "2": { "name": "keyword.operator.comparison.sql" },
+            "3": { "name": "string.quoted.single.sql" },
+            "4": { "name": "constant.language.risingwave.connector" },
+            "5": { "name": "string.quoted.single.sql" }
+          }
+        },
+        { "include": "#strings" },
+        { "include": "#numbers" },
+        {
+          "comment": "generated:option — well-known RisingWave option keys",
+          "name": "keyword.control.risingwave.option",
+          "match": "(?i)\\b(snapshot\\.batch_size|snapshot\\.interval|primary_key|connector|snapshot|type)\\b(?=\\s*=)"
+        },
+        {
+          "comment": "Any other option key (dotted identifiers like properties.bootstrap.server)",
+          "name": "variable.parameter.risingwave.option",
+          "match": "\\b[A-Za-z_][A-Za-z0-9_.]*\\b(?=\\s*=)"
+        },
+        { "include": "#operators" }
+      ]
+    },
     "risingwave-keywords": {
       "patterns": [
         {
-          "comment": "RisingWave DDL - Sources and Sinks",
+          "comment": "generated:ddl — RisingWave DDL - Sources and Sinks",
           "name": "keyword.control.risingwave.ddl",
-          "match": "(?i)\\b(CREATE\\s+SOURCE|CREATE\\s+SINK|CREATE\\s+MATERIALIZED\\s+VIEW|DROP\\s+SOURCE|DROP\\s+SINK|DROP\\s+MATERIALIZED\\s+VIEW|ALTER\\s+SOURCE|ALTER\\s+SINK|ALTER\\s+MATERIALIZED\\s+VIEW)\\b"
+          "match": "(?i)\\b(CREATE\\s+MATERIALIZED\\s+VIEW|ALTER\\s+MATERIALIZED\\s+VIEW|DROP\\s+MATERIALIZED\\s+VIEW|CREATE\\s+SOURCE|ALTER\\s+SOURCE|CREATE\\s+SINK|DROP\\s+SOURCE|ALTER\\s+SINK|DROP\\s+SINK)\\b"
         },
         {
-          "comment": "RisingWave streaming keywords",
+          "comment": "generated:streaming — RisingWave streaming keywords",
           "name": "keyword.control.risingwave.streaming",
-          "match": "(?i)\\b(EMIT\\s+ON\\s+WINDOW\\s+CLOSE|EMIT\\s+ON\\s+UPDATE|EMIT\\s+IMMEDIATELY|WATERMARK\\s+FOR|WITH\\s+WATERMARK|ASOF\\s+JOIN|ASOF\\s+LEFT\\s+JOIN|TEMPORAL\\s+JOIN|INCLUDE\\s+KEY|INCLUDE\\s+TIMESTAMP|INCLUDE\\s+PARTITION|INCLUDE\\s+OFFSET|INCLUDE\\s+HEADER)\\b"
+          "match": "(?i)\\b(EMIT\\s+ON\\s+WINDOW\\s+CLOSE|INCLUDE\\s+TIMESTAMP|INCLUDE\\s+PARTITION|EMIT\\s+IMMEDIATELY|EMIT\\s+ON\\s+UPDATE|WITH\\s+WATERMARK|ASOF\\s+LEFT\\s+JOIN|INCLUDE\\s+OFFSET|INCLUDE\\s+HEADER|WATERMARK\\s+FOR|TEMPORAL\\s+JOIN|INCLUDE\\s+KEY|ASOF\\s+JOIN)\\b"
         },
         {
-          "comment": "RisingWave window types",
+          "comment": "generated:window — RisingWave window types",
           "name": "keyword.control.risingwave.window",
-          "match": "(?i)\\b(TUMBLE|HOP|SESSION|TUMBLE_START|TUMBLE_END|HOP_START|HOP_END|SESSION_START|SESSION_END)\\b"
+          "match": "(?i)\\b(SESSION_START|TUMBLE_START|SESSION_END|TUMBLE_END|HOP_START|SESSION|HOP_END|TUMBLE|HOP)\\b"
         },
         {
-          "comment": "RisingWave format and encoding",
+          "comment": "generated:format — FORMAT <value>",
+          "match": "(?i)\\b(FORMAT)\\s+(DEBEZIUM|MAXWELL|UPSERT|PLAIN|CANAL)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.risingwave.format" },
+            "2": { "name": "constant.language.risingwave.format" }
+          }
+        },
+        {
+          "comment": "generated:encode — ENCODE <value>",
+          "match": "(?i)\\b(ENCODE)\\s+(PROTOBUF|BYTES|JSON|AVRO|CSV)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.risingwave.format" },
+            "2": { "name": "constant.language.risingwave.format" }
+          }
+        },
+        {
+          "comment": "generated:format-keywords — bare FORMAT / ENCODE",
           "name": "keyword.control.risingwave.format",
-          "match": "(?i)\\b(FORMAT|ENCODE|PLAIN|UPSERT|DEBEZIUM|MAXWELL|CANAL|JSON|AVRO|PROTOBUF|CSV|BYTES)\\b"
+          "match": "(?i)\\b(FORMAT|ENCODE)\\b"
         },
         {
-          "comment": "RisingWave admin commands",
+          "comment": "generated:admin — RisingWave admin commands",
           "name": "keyword.control.risingwave.admin",
-          "match": "(?i)\\b(SHOW\\s+SOURCES|SHOW\\s+SINKS|SHOW\\s+MATERIALIZED\\s+VIEWS|SHOW\\s+JOBS|SHOW\\s+CLUSTERS|SHOW\\s+INTERNAL\\s+TABLES|CANCEL\\s+JOBS?|RECOVER|FLUSH|PAUSE|RESUME|RISECTL)\\b"
-        },
-        {
-          "comment": "RisingWave options",
-          "name": "keyword.control.risingwave.option",
-          "match": "(?i)\\b(connector|type|primary_key|snapshot|snapshot\\.interval|snapshot\\.batch_size)\\b"
+          "match": "(?i)\\b(SHOW\\s+MATERIALIZED\\s+VIEWS|SHOW\\s+INTERNAL\\s+TABLES|SHOW\\s+CLUSTERS|SHOW\\s+SOURCES|CANCEL\\s+JOBS|SHOW\\s+SINKS|CANCEL\\s+JOB|SHOW\\s+JOBS|RECOVER|RISECTL|RESUME|FLUSH|PAUSE)\\b"
         }
       ]
     },
     "risingwave-functions": {
       "patterns": [
         {
-          "comment": "RisingWave built-in functions",
+          "comment": "generated:functions — RisingWave-specific functions (PostgreSQL functions are in #postgresql-functions)",
           "name": "support.function.risingwave",
-          "match": "(?i)\\b(proctime|now|lag|lead|first_value|last_value|array_agg|string_agg|jsonb_agg|jsonb_object_agg)\\b"
-        }
-      ]
-    },
-    "risingwave-connectors": {
-      "patterns": [
-        {
-          "comment": "RisingWave connector names",
-          "name": "constant.language.risingwave.connector",
-          "match": "(?i)\\b(kafka|kinesis|pulsar|postgres-cdc|mysql-cdc|sqlserver-cdc|mongodb-cdc|datagen|nexmark|iceberg|jdbc|mongodb|snowflake|redis|elasticsearch|clickhouse|doris|starrocks|delta|s3|gcs|azblob)\\b"
+          "match": "(?i)\\b(proctime)\\b"
         }
       ]
     },
     "risingwave-types": {
       "patterns": [
         {
-          "comment": "RisingWave data types",
+          "comment": "generated:types — RisingWave data types",
           "name": "storage.type.risingwave",
-          "match": "(?i)\\b(STRUCT|JSONB|BYTEA|TIMESTAMPTZ|TIMESTAMP\\s+WITH\\s+TIME\\s+ZONE|RWTIMESTAMP)\\b"
+          "match": "(?i)\\b(TIMESTAMP\\s+WITH\\s+TIME\\s+ZONE|TIMESTAMPTZ|RWTIMESTAMP|STRUCT|JSONB|BYTEA)\\b"
         }
       ]
     },
